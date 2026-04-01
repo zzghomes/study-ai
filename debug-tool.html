@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 星空主题调试工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 8px 8px 8px 0;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover { background: rgba(255,255,255,0.3); }
+    .btn-primary { background: rgba(100,150,255,0.3); }
+    .log {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    .warn { color: #ff0; }
+    .info { color: #0ff; }
+    .result { color: #fff; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 星空主题调试工具</h1>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 16px; color: #fff;">📋 测试步骤</h2>
+      <ol style="margin-left: 20px; line-height: 2;">
+        <li>点击 <strong>"打开 AI 探险家"</strong> 按钮</li>
+        <li>在新页面点击右下角 <strong>深紫色按钮</strong>（星空主题）</li>
+        <li>回到这个页面，点击 <strong>"运行诊断"</strong></li>
+        <li>查看下方的检测结果</li>
+      </ol>
+    </div>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 16px; color: #fff;">🔧 操作</h2>
+      <a href="index.html?v=2026030506" class="btn btn-primary" target="_blank">🏠 打开 AI 探险家</a>
+      <button class="btn" onclick="runDiagnostics()">🔍 运行诊断</button>
+      <button class="btn" onclick="clearLog()">🗑️ 清空日志</button>
+    </div>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 16px; color: #fff;">📊 检测结果</h2>
+      <div class="log" id="log">等待检测...</div>
+    </div>
+  </div>
+  
+  <script>
+    const logEl = document.getElementById('log');
+    
+    function log(msg, type = 'info') {
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warn' ? '⚠️' : 'ℹ️';
+      const html = `<div><span class="${type}">[${prefix}]</span> ${msg}</div>`;
+      logEl.innerHTML += html;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function clearLog() {
+      logEl.innerHTML = '日志已清空';
+    }
+    
+    async function runDiagnostics() {
+      logEl.innerHTML = '';
+      log('开始诊断...', 'info');
+      
+      try {
+        // 打开 AI 探险家页面
+        log('请确保 AI 探险家页面已打开', 'warn');
+        await sleep(1000);
+        
+        log('尝试访问 AI 探险家页面...', 'info');
+        
+        // 检查 localStorage
+        const savedTheme = localStorage.getItem('aiExplorerTheme');
+        log(`localStorage 中的主题：${savedTheme || '未设置'}`, savedTheme === 'space' ? 'success' : 'warn');
+        
+        // 检查 themes.css 是否加载
+        const stylesheets = Array.from(document.styleSheets);
+        const themesCSS = stylesheets.find(s => s.href && s.href.includes('themes.css'));
+        log(`themes.css: ${themesCSS ? '✅ 已加载' : '❌ 未加载'}`, themesCSS ? 'success' : 'error');
+        
+        // 检查 styles.css 是否加载
+        const stylesCSS = stylesheets.find(s => s.href && s.href.includes('styles.css'));
+        log(`styles.css: ${stylesCSS ? '✅ 已加载' : '❌ 未加载'}`, stylesCSS ? 'success' : 'error');
+        
+        await sleep(500);
+        
+        log('\n📋 诊断完成！', 'info');
+        log('请在 AI 探险家页面按 F12 打开控制台，输入以下代码：', 'info');
+        log('document.documentElement.getAttribute("data-theme")', 'info');
+        log('然后告诉我结果', 'warn');
+        
+      } catch (e) {
+        log(`错误：${e.message}`, 'error');
+      }
+    }
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  </script>
+</body>
+</html>

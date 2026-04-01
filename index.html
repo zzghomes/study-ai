@@ -1,0 +1,546 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" data-theme="coral">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤖 AI 探险家 - 少儿 AI 学习乐园</title>
+<link rel="stylesheet" href="themes.css?v=202603291825">
+<link rel="stylesheet" href="styles.css?v=202603271536">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="certificates.css?v=202603252200">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6C5CE7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">🤖 AI 探险家</h1>
+      <nav class="nav">
+        <button class="nav-btn active" data-page="home">
+          <span class="nav-btn-icon">🏠</span>
+          <span class="nav-btn-text">首页</span>
+        </button>
+        <button class="nav-btn" data-page="tasks">
+          <span class="nav-btn-icon">📋</span>
+          <span class="nav-btn-text">任务</span>
+        </button>
+        <button class="nav-btn" data-page="achievements">
+          <span class="nav-btn-icon">🏆</span>
+          <span class="nav-btn-text">成就</span>
+        </button>
+        <button class="nav-btn" data-page="gallery">
+          <span class="nav-btn-icon">📸</span>
+          <span class="nav-btn-text">作品</span>
+        </button>
+        <button class="nav-btn" data-page="knowledge">
+          <span class="nav-btn-icon">📚</span>
+          <span class="nav-btn-text">知识库</span>
+        </button>
+        <button class="nav-btn" data-page="parents">
+          <span class="nav-btn-icon">🏕️</span>
+          <span class="nav-btn-text">探险基地</span>
+        </button>
+        <button class="nav-btn nav-btn-sound" onclick="app.toggleSound()" id="sound-btn">
+          <span class="nav-btn-icon">🔊</span>
+        </button>
+      </nav>
+      
+      <!-- 主题切换器 - 导航栏最右边 -->
+      <div class="header-theme-wrapper">
+        <div class="header-theme-switcher">
+          <button class="header-theme-btn" onclick="app.switchTheme('coral')" title="珊瑚橙" style="--theme-gradient: linear-gradient(135deg, #ff8a65, #ffb74d);">珊瑚橙</button>
+          <button class="header-theme-btn" onclick="app.switchTheme('mint')" title="薄荷绿" style="--theme-gradient: linear-gradient(135deg, #69f0ae, #b9f6ca);">薄荷绿</button>
+          <button class="header-theme-btn" onclick="app.switchTheme('lavender')" title="薰衣草紫" style="--theme-gradient: linear-gradient(135deg, #b388ff, #d1c4e9);">薰衣草紫</button>
+          <button class="header-theme-btn" onclick="app.switchTheme('sunset')" title="日落橙" style="--theme-gradient: linear-gradient(135deg, #ff6e40, #ffa06d);">日落橙</button>
+          <button class="header-theme-btn" onclick="app.switchTheme('ocean')" title="海洋蓝" style="--theme-gradient: linear-gradient(135deg, #4fc3f7, #81d4fa);">海洋蓝</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <!-- 首页 -->
+    <section id="home" class="page active">
+      <!-- 问候卡片 - 第一个位置（视频版） -->
+      <div class="welcome-card video-card">
+        <video autoplay loop muted playsinline id="welcome-video">
+          <source src="assets/kling_01.mp4" type="video/mp4">
+          您的浏览器不支持视频播放
+        </video>
+        <div class="video-overlay">
+          <h2 id="welcome-title">下午好，小探险家！</h2>
+          <p id="welcome-message">准备好今天的 AI 冒险了吗？</p>
+        </div>
+      </div>
+
+      <div class="xp-container">
+        <div class="xp-header">
+          <div class="level-badge" id="current-level">
+            <span class="level-icon">🌱</span>
+            <span>LV.1 AI 新手</span>
+          </div>
+          <div class="xp-value" id="xp-value">0 XP</div>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-fill" id="xp-fill"></div>
+        </div>
+      </div>
+
+      <!-- 今日任务 - 放在学习进度前面 -->
+      <div class="today-section">
+        <div class="section-title" data-icon="📅">
+          <span class="title-text">今日任务</span>
+        </div>
+        <div class="today-card" id="today-task">
+          <div class="task-loading">加载中...</div>
+        </div>
+      </div>
+
+      <!-- 学习进度 -->
+      <div class="section-title" data-icon="📊">
+        <span class="title-text">学习进度</span>
+      </div>
+      <div class="progress-card">
+        <div class="progress-info">
+          <span>总进度</span>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-stats">
+          <div class="stat">
+            <span class="stat-value" id="completed-days">0</span>
+            <span class="stat-label">已完成天数</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="completed-tasks">0</span>
+            <span class="stat-label">已完成任务</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="total-badges">0</span>
+            <span class="stat-label">获得徽章</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title" data-icon="🎯">
+        <span class="title-text">快捷入口</span>
+      </div>
+      <div class="platform-grid" id="platform-grid"></div>
+    </section>
+
+    <!-- 任务页面 -->
+    <section id="tasks" class="page">
+      <div class="task-header">
+        <div class="section-title" data-icon="📋">
+          <span class="title-text">我的任务</span>
+        </div>
+      </div>
+      <div id="days-container"></div>
+    </section>
+
+    <!-- 成就页面 -->
+    <section id="achievements" class="page">
+      <!-- 页面头部统计 -->
+      <div class="achievements-header">
+        <div class="section-title" data-icon="🏆">
+          <span class="title-text">我的成就</span>
+        </div>
+        
+        <div class="achievements-stats">
+          <div class="stats-row">
+            <div class="stat-card">
+              <span class="stat-icon">🎖️</span>
+              <div class="stat-content">
+                <span class="stat-value" id="badge-unlocked">0</span>
+                <span class="stat-total">/</span>
+                <span class="stat-max" id="badge-total">0</span>
+              </div>
+              <span class="stat-label">徽章</span>
+            </div>
+            
+            <div class="stat-card">
+              <span class="stat-icon">🎁</span>
+              <div class="stat-content">
+                <span class="stat-value" id="reward-unlocked">0</span>
+                <span class="stat-total">/</span>
+                <span class="stat-max" id="reward-total">0</span>
+              </div>
+              <span class="stat-label">奖励</span>
+            </div>
+            
+            <div class="stat-card">
+              <span class="stat-icon">⭐</span>
+              <div class="stat-content">
+                <span class="stat-value" id="completion-rate">0</span>
+                <span class="stat-max">%</span>
+              </div>
+              <span class="stat-label">完成率</span>
+            </div>
+          </div>
+          
+          <div class="achievements-progress">
+            <div class="progress-bar-large">
+              <div class="progress-fill-large" id="achievements-progress-fill"></div>
+            </div>
+            <span class="progress-text" id="achievements-progress-text">已解锁 0/0</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 筛选和排序 -->
+      <div class="achievements-filters">
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="unlocked">已解锁</button>
+          <button class="filter-btn" data-filter="locked">未解锁</button>
+        </div>
+        <div class="sort-group">
+          <select class="sort-select" id="badge-sort">
+            <option value="default">默认排序</option>
+            <option value="rarity">按稀有度</option>
+            <option value="name">按名称</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- 徽章网格 -->
+      <div class="badges-grid" id="badges-grid"></div>
+      
+      <!-- 奖励列表 -->
+      <div class="section-title" style="margin-top: 40px;" data-icon="🎁">
+        <span class="title-text">奖励</span>
+      </div>
+      <div class="rewards-list" id="rewards-list"></div>
+    </section>
+
+    <!-- 作品页面 -->
+    <section id="gallery" class="page">
+      <div class="section-title" data-icon="📸">
+        <span class="title-text">我的作品</span>
+      </div>
+      <div class="gallery-actions">
+        <button class="btn-primary" onclick="app.showAddWorkModal()">➕ 添加作品</button>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </section>
+
+    <!-- 知识库页面 -->
+    <section id="knowledge" class="page">
+      <div class="section-title" data-icon="📚">
+        <span class="title-text">知识库</span>
+      </div>
+      
+      <!-- 模块卡片 - 采用任务页面段位横栏高级艺术感设计 -->
+      <div class="knowledge-modules">
+        <!-- 我的收藏卡片 -->
+        <div class="knowledge-module-card" data-type="favorites" onclick="showFavoritesModal()">
+          <div class="knowledge-module-decoration" style="background: linear-gradient(180deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%); box-shadow: 0 0 24px rgba(255, 215, 0, 0.7), 0 0 48px rgba(255, 215, 0, 0.4);"></div>
+          <div class="knowledge-module-info">
+            <div class="knowledge-module-icon">⭐</div>
+            <div class="knowledge-module-content">
+              <span class="knowledge-module-name" data-type="favorites">我的收藏</span>
+              <span class="knowledge-module-desc">收藏的术语、平台和提示词模板</span>
+            </div>
+            <span class="knowledge-module-progress" id="favorites-progress">0/0 已收藏</span>
+          </div>
+        </div>
+        
+        <!-- 提示词模板卡片 -->
+        <div class="knowledge-module-card" data-type="templates" onclick="showTemplatesModal()">
+          <div class="knowledge-module-decoration" style="background: linear-gradient(180deg, #8B73FF 0%, #7B68EE 50%, #6C5CE7 100%); box-shadow: 0 0 24px rgba(139, 115, 255, 0.7), 0 0 48px rgba(139, 115, 255, 0.4);"></div>
+          <div class="knowledge-module-info">
+            <div class="knowledge-module-icon">📝</div>
+            <div class="knowledge-module-content">
+              <span class="knowledge-module-name" data-type="templates">提示词模板</span>
+              <span class="knowledge-module-desc">精选提示词，快速上手 AI</span>
+            </div>
+            <span class="knowledge-module-progress" id="templates-progress">0/0 已学习</span>
+          </div>
+        </div>
+        
+        <!-- AI 术语词典卡片 -->
+        <div class="knowledge-module-card" data-type="terms" onclick="showTermsModal()">
+          <div class="knowledge-module-decoration" style="background: linear-gradient(180deg, #4FC3F7 0%, #29B6F6 50%, #03A9F4 100%); box-shadow: 0 0 24px rgba(79, 195, 247, 0.7), 0 0 48px rgba(79, 195, 247, 0.4);"></div>
+          <div class="knowledge-module-info">
+            <div class="knowledge-module-icon">📖</div>
+            <div class="knowledge-module-content">
+              <span class="knowledge-module-name" data-type="terms">AI 术语词典</span>
+              <span class="knowledge-module-desc">核心术语解析，掌握 AI 概念</span>
+            </div>
+            <span class="knowledge-module-progress" id="terms-progress">0/0 已学习</span>
+          </div>
+        </div>
+        
+        <!-- AI 平台百科卡片 -->
+        <div class="knowledge-module-card" data-type="platforms" onclick="showPlatformsModal()">
+          <div class="knowledge-module-decoration" style="background: linear-gradient(180deg, #69F0AE 0%, #00E676 50%, #00C853 100%); box-shadow: 0 0 24px rgba(105, 240, 174, 0.7), 0 0 48px rgba(105, 240, 174, 0.4);"></div>
+          <div class="knowledge-module-info">
+            <div class="knowledge-module-icon">🌐</div>
+            <div class="knowledge-module-content">
+              <span class="knowledge-module-name" data-type="platforms">AI 平台百科</span>
+              <span class="knowledge-module-desc">主流 AI 平台介绍与对比</span>
+            </div>
+            <span class="knowledge-module-progress" id="platforms-progress">0/0 已学习</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 探险基地 -->
+    <section id="parents" class="page">
+      <div class="section-title" data-icon="🏕️">
+        <span class="title-text">探险基地</span>
+      </div>
+      
+      <!-- 宝贝管理 -->
+      <div class="parent-card" style="margin-bottom: 24px;">
+        <h3>👨‍👩‍👧‍👦 宝贝管理</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+          管理多个宝贝的学习数据，每个宝贝有独立的学习进度和成长报告
+        </p>
+        <div id="child-selector" class="child-selector-container">
+          <!-- 动态生成孩子选择器 -->
+        </div>
+        <div style="margin-top: 16px; display: flex; gap: 12px;">
+          <button class="btn-primary" onclick="app.multiChild.showAddChildModal()">➕ 添加宝贝</button>
+          <button class="btn-secondary" onclick="app.multiChild.showManageChildrenModal()">⚙️ 管理宝贝</button>
+        </div>
+      </div>
+      
+      <div class="parent-card">
+        <h3>📊 学习报告</h3>
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="app.exportPDFReport()">📄 导出 PDF 报告</button>
+          <button class="btn-secondary" onclick="app.toggleHeatmap()">🔥 查看热力图</button>
+        </div>
+        <div class="report-stats">
+          <div class="report-stat">
+            <div class="report-stat-label">开始日期</div>
+            <div class="report-stat-value" id="parent-start-date">-</div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">学习天数</div>
+            <div class="report-stat-value" id="parent-study-days">-</div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">完成率</div>
+            <div class="report-stat-value" id="parent-completion-rate">-</div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">上次活跃</div>
+            <div class="report-stat-value" id="parent-last-active">-</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 学习热力图容器 -->
+      <div class="parent-card" id="heatmap-container" style="margin-top: 24px; display: none;">
+        <!-- 热力图将渲染在这里 -->
+      </div>
+
+      <!-- 能力成长雷达图 -->
+      <div class="parent-card" style="margin-top: 24px;">
+        <h3>🎯 能力成长雷达图</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+          基于孩子的学习数据，生成多维度能力评估可视化图表
+        </p>
+        <div style="display: flex; justify-content: center; margin: 20px 0;">
+          <canvas id="radar-chart" width="400" height="400"></canvas>
+        </div>
+        <div class="ability-stats" id="ability-stats">
+          <!-- 动态生成各维度得分 -->
+        </div>
+        <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="app.toggleMonthComparison()">📈 月度对比</button>
+          <button class="btn-secondary" onclick="app.showRecommendations()">💡 个性化推荐</button>
+        </div>
+      </div>
+
+      <!-- 月度对比面板 -->
+      <div class="parent-card" id="month-comparison-panel" style="margin-top: 24px; display: none;">
+        <h3>📊 月度能力对比</h3>
+        <div style="display: flex; justify-content: center; margin: 20px 0;">
+          <canvas id="comparison-radar-chart" width="400" height="400"></canvas>
+        </div>
+        <div class="comparison-stats" id="comparison-stats">
+          <!-- 动态生成对比数据 -->
+        </div>
+      </div>
+
+      <!-- 个性化推荐面板 -->
+      <div class="parent-card" id="recommendation-panel" style="margin-top: 24px; display: none;">
+        <h3>💡 个性化推荐</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+          基于能力短板，推荐相应任务和练习
+        </p>
+        <div id="recommendation-list">
+          <!-- 动态生成推荐内容 -->
+        </div>
+      </div>
+
+      <!-- AI 评语面板 -->
+      <div class="parent-card" id="ai-comment-panel" style="margin-top: 24px;">
+        <h3>🤖 AI 成长评语</h3>
+        <div id="ai-comment-content" style="line-height: 1.8; color: var(--text-secondary);">
+          <!-- AI 生成的评语 -->
+        </div>
+        <button class="btn-secondary" onclick="app.generateAIComment()" style="margin-top: 16px;">🔄 重新生成评语</button>
+      </div>
+
+      <div class="parent-card" style="margin-top: 24px;">
+        <h3>⚙️ 设置</h3>
+        <div class="form-group" style="margin-top: 16px;">
+          <label>📚 课程体系</label>
+          <div style="padding: 16px; background: rgba(108, 92, 231, 0.1); border-radius: 12px; border-left: 4px solid var(--primary);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <span style="font-size: 24px;">🚀</span>
+              <div>
+                <div style="font-weight: 600; color: var(--primary);">21 天完整版</div>
+                <div style="font-size: 12px; color: var(--secondary);">完整体系 · 4 个阶段 · 深入学习</div>
+              </div>
+            </div>
+            <div style="font-size: 13px; color: var(--secondary); line-height: 1.6;">
+              📊 当前课程体系包含 21 天学习任务，分为青铜、白银、黄金、钻石 4 个段位，循序渐进掌握 AI 技能
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 24px;">
+          <button class="btn-secondary" onclick="app.resetProgress()" style="margin-right: 12px;">🔄 重置进度</button>
+          <button class="btn-secondary" onclick="app.exportData()">💾 导出数据</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 平台模态框 -->
+  <div class="modal" id="platform-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="app.closePlatformModal()">×</button>
+      <div class="modal-header">
+        <h3 id="platform-modal-title">AI 平台</h3>
+      </div>
+      <div class="modal-body" id="platform-modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closePlatformModal()">关闭</button>
+        <button class="btn-primary" id="platform-visit-btn">🌐 访问平台</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 任务模态框 -->
+  <div class="modal" id="task-modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <button class="modal-close" onclick="app.closeTaskModal()">×</button>
+      <div class="modal-header">
+        <h3 id="modal-day">第 X 天</h3>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 24px;">
+          <h2 id="modal-title" style="margin-bottom: 12px;">任务标题</h2>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+            <span class="platform-badge" id="modal-platform">平台</span>
+            <span class="difficulty-badge" id="modal-difficulty">难度</span>
+          </div>
+          <p id="modal-description" style="line-height: 1.6;">任务描述</p>
+        </div>
+        
+        <h3 style="margin-bottom: 16px;">📝 任务清单</h3>
+        <div id="modal-cases"></div>
+        
+        <div id="modal-tips" style="margin-top: 24px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closeTaskModal()">关闭</button>
+        <button class="btn-primary" onclick="app.completeTask()">✅ 完成任务</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加作品模态框 -->
+  <div class="modal" id="work-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="app.closeWorkModal()">×</button>
+      <div class="modal-header">
+        <h3>📸 添加新作品</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>作品标题</label>
+          <input type="text" id="work-title" placeholder="给作品起个名字">
+        </div>
+        <div class="form-group">
+          <label>使用的 AI 平台</label>
+          <select id="work-platform">
+            <option value="豆包">豆包</option>
+            <option value="DeepSeek">DeepSeek</option>
+            <option value="通义千问">通义千问</option>
+            <option value="Kimi">Kimi</option>
+            <option value="文心一言">文心一言</option>
+            <option value="智谱清言">智谱清言</option>
+            <option value="腾讯元宝">腾讯元宝</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>关联任务（可选）</label>
+          <select id="work-task">
+            <option value="">选择关联的任务</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>作品描述</label>
+          <textarea id="work-description" placeholder="描述一下你的作品..." rows="3"></textarea>
+        </div>
+        <!-- 图片上传功能 -->
+        <div class="form-group">
+          <label>📷 上传作品图片（可选）</label>
+          <div class="image-upload-area" style="margin-top: 8px;">
+            <label for="work-image-input" class="image-upload-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--primary); color: white; border-radius: 8px; cursor: pointer; font-size: 14px; transition: opacity 0.2s;" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">
+              📁 选择图片
+              <input type="file" id="work-image-input" accept="image/*" style="display: none;" onchange="app.handleWorkImageSelect(this)">
+            </label>
+            <div id="work-image-preview" style="margin-top: 12px; display: none;">
+              <div style="position: relative; display: inline-block;">
+                <img id="work-image-preview-img" src="" alt="作品预览" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid var(--primary);">
+                <button type="button" onclick="app.removeWorkImage()" style="position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; background: var(--error); color: white; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;">×</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closeWorkModal()">取消</button>
+        <button class="btn-primary" onclick="app.saveWork()">💾 保存作品</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 底部提示 -->
+  <div class="toast" id="toast"></div>
+
+  <script src="sounds.js"></script>
+  <!-- 21 天任务系统数据（包含 AI 平台数据） -->
+  <script src="data-21days.js?v=202603271158"></script>
+  <!-- 学习日志模块 -->
+  <script src="utils/learning-log.js?v=202603251630"></script>
+  <!-- 作品集模块 -->
+  <script src="utils/portfolio.js?v=202603251630"></script>
+  <!-- 其他工具模块 -->
+  <script src="utils/reminder.js?v=202603241142"></script>
+  <script src="utils/multi-child.js?v=202603241142"></script>
+  <script src="utils/pdf-export.js?v=202603241142"></script>
+  <script src="utils/heatmap.js?v=202603241142"></script>
+  <script src="utils/knowledge.js?v=202603312216"></script>
+  <script src="app.js?v=202603271648"></script>
+  <script src="certificate.js"></script>
+</body>
+</html>
+

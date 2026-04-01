@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>粘土质感测试</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background: linear-gradient(180deg, #FFEBE0 0%, #FFF8F0 50%, #FFE5D0 100%);
+      min-height: 100vh;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    h1 {
+      color: #4A3F45;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    /* 粘土卡片 */
+    .clay-card {
+      width: 300px;
+      padding: 40px;
+      background: #FFFFFF;
+      border-radius: 32px;
+      border: none;
+      /* 强烈橡皮泥阴影 */
+      box-shadow: 
+        12px 12px 24px rgba(180, 140, 120, 0.18),
+        -8px -8px 20px rgba(255, 255, 255, 1);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+    }
+
+    .clay-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 
+        16px 16px 32px rgba(180, 140, 120, 0.22),
+        -10px -10px 24px rgba(255, 255, 255, 1);
+    }
+
+    .clay-card .emoji {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .clay-card h3 {
+      color: #4A3F45;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .clay-card p {
+      color: rgba(74, 63, 69, 0.6);
+      font-size: 14px;
+    }
+
+    /* 粘土按钮 */
+    .clay-btn {
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #FF6B5B 0%, #FFA06B 100%);
+      border: none;
+      border-radius: 22px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 
+        8px 8px 16px rgba(180, 140, 120, 0.2),
+        -6px -6px 14px rgba(255, 255, 255, 1),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .clay-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        10px 10px 20px rgba(180, 140, 120, 0.22),
+        -8px -8px 18px rgba(255, 255, 255, 1),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .clay-btn:active {
+      transform: scale(0.97) translateY(2px);
+      box-shadow: 
+        inset 6px 6px 12px rgba(180, 140, 120, 0.2),
+        inset -4px -4px 10px rgba(255, 255, 255, 1);
+    }
+
+    /* 进度条 */
+    .progress-container {
+      width: 300px;
+    }
+
+    .progress-label {
+      color: #4A3F45;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 24px;
+      background: #F0E8E0;
+      border-radius: 14px;
+      box-shadow: 
+        inset 4px 4px 8px rgba(180, 140, 120, 0.15),
+        inset -2px -2px 6px rgba(255, 255, 255, 1);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(135deg, #FF6B5B 0%, #FFA06B 50%, #FFB347 100%);
+      border-radius: 12px;
+      box-shadow: 
+        inset 0 2px 4px rgba(255, 255, 255, 0.6),
+        0 2px 4px rgba(180, 140, 120, 0.15);
+      transition: width 0.8s ease;
+    }
+
+    /* 连击计数器 */
+    .streak-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #FF6B5B 0%, #FFA06B 100%);
+      border-radius: 999px;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      box-shadow: 
+        10px 10px 20px rgba(180, 140, 120, 0.2),
+        -8px -8px 18px rgba(255, 255, 255, 1),
+        inset 0 3px 5px rgba(255, 255, 255, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { 
+        transform: scale(1);
+      }
+      50% { 
+        transform: scale(1.05);
+      }
+    }
+
+    /* 输入框 */
+    .clay-input {
+      width: 300px;
+      padding: 16px 24px;
+      background: #F8F5F0;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      color: #4A3F45;
+      box-shadow: 
+        inset 4px 4px 8px rgba(180, 140, 120, 0.12),
+        inset -2px -2px 6px rgba(255, 255, 255, 1);
+      transition: all 0.3s;
+    }
+
+    .clay-input:focus {
+      outline: none;
+      box-shadow: 
+        inset 6px 6px 12px rgba(180, 140, 120, 0.15),
+        inset -4px -4px 8px rgba(255, 255, 255, 1),
+        0 0 0 3px rgba(255, 107, 91, 0.15);
+    }
+
+    .clay-input::placeholder {
+      color: rgba(74, 63, 69, 0.4);
+    }
+
+    /* 说明 */
+    .info {
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 24px;
+      border-radius: 20px;
+      color: #4A3F45;
+      line-height: 1.8;
+    }
+
+    .info h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .info ul {
+      margin-left: 20px;
+    }
+
+    .info li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 粘土橡皮泥质感测试</h1>
+
+  <!-- 卡片测试 -->
+  <div class="clay-card">
+    <div class="emoji">🚀</div>
+    <h3>AI 探险家</h3>
+    <p>探索 15+ 主流 AI 平台</p>
+  </div>
+
+  <!-- 按钮测试 -->
+  <button class="clay-btn">点击我试试</button>
+
+  <!-- 进度条测试 -->
+  <div class="progress-container">
+    <div class="progress-label">📊 学习进度</div>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- 连击计数器测试 -->
+  <div class="streak-badge">
+    🔥 7 天连击
+  </div>
+
+  <!-- 输入框测试 -->
+  <input type="text" class="clay-input" placeholder="输入你的名字...">
+
+  <!-- 说明 -->
+  <div class="info">
+    <h2>✅ 粘土质感特征</h2>
+    <ul>
+      <li><strong>双层阴影：</strong>左上高光 + 右下阴影，创造厚度感</li>
+      <li><strong>超圆角：</strong>32px 圆角，像手工捏制的橡皮泥</li>
+      <li><strong>暖色调：</strong>奶油色背景 + 珊瑚色强调</li>
+      <li><strong>弹性动画：</strong>cubic-bezier 缓动，有回弹效果</li>
+      <li><strong>凹槽效果：</strong>进度条和输入框使用内阴影</li>
+      <li><strong>3D 按钮：</strong>点击时有压缩变形效果</li>
+    </ul>
+  </div>
+
+  <script>
+    // 按钮点击效果测试
+    document.querySelector('.clay-btn').addEventListener('click', function() {
+      console.log('🎨 粘土按钮被点击了！');
+    });
+
+    // 进度条动画
+    setTimeout(() => {
+      const fill = document.querySelector('.progress-fill');
+      fill.style.width = '65%';
+    }, 500);
+  </script>
+</body>
+</html>

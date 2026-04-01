@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>清除图标缓存</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px 5px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    .icon-list {
+      margin: 20px 0;
+    }
+    .icon-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .icon-item img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 清除图标缓存</h1>
+    
+    <div id="status"></div>
+    
+    <div class="icon-list" id="iconList"></div>
+    
+    <div style="margin-top: 30px;">
+      <button onclick="clearCache()">🔄 清除缓存并刷新</button>
+      <button onclick="location.href='index.html'">🏠 返回首页</button>
+    </div>
+  </div>
+
+  <script>
+    // 显示图标列表
+    function showIconList() {
+      const icons = [
+        { name: '豆包', path: 'logos/doubao.png' },
+        { name: 'DeepSeek', path: 'logos/deepseek.png' },
+        { name: '通义千问', path: 'logos/tongyi.png' },
+        { name: 'Kimi', path: 'logos/kimi.png' },
+        { name: '文心一言', path: 'logos/wenxin.png' },
+        { name: '智谱清言', path: 'logos/qingyan.png' },
+        { name: '腾讯元宝', path: 'logos/yuanbao.png' }
+      ];
+
+      const container = document.getElementById('iconList');
+      let html = '<h3>📊 当前图标文件：</h3>';
+      
+      icons.forEach(icon => {
+        const timestamp = '?t=' + Date.now();
+        html += `
+          <div class="icon-item">
+            <img src="${icon.path}${timestamp}" alt="${icon.name}">
+            <span>${icon.name} - ${icon.path}</span>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    // 清除缓存
+    function clearCache() {
+      const statusDiv = document.getElementById('status');
+      
+      // 清除 Service Worker 缓存
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            caches.delete(name);
+            console.log('Cache deleted:', name);
+          });
+        });
+      }
+
+      // 清除 Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => {
+            registration.unregister();
+            console.log('Service Worker unregistered:', registration);
+          });
+        });
+      }
+
+      // 强制刷新
+      statusDiv.innerHTML = '<div class="info">⏳ 正在清除缓存...</div>';
+      
+      setTimeout(() => {
+        // 添加随机参数强制刷新
+        const timestamp = '?nocache=' + Date.now();
+        window.location.href = 'index.html' + timestamp;
+      }, 1000);
+    }
+
+    // 页面加载时显示图标列表
+    showIconList();
+
+    // 自动清除缓存并跳转到首页
+    setTimeout(() => {
+      clearCache();
+    }, 1500);
+  </script>
+</body>
+</html>

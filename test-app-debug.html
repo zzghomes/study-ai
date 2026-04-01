@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 AI 探险家 - 应用调试测试</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 20px;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 20px; }
+    .result { 
+      padding: 12px 16px; 
+      margin-bottom: 8px; 
+      border-radius: 8px; 
+      font-family: monospace;
+      font-size: 13px;
+    }
+    .pass { background: rgba(52,199,89,0.2); border-left: 4px solid #34c759; }
+    .fail { background: rgba(255,59,48,0.2); border-left: 4px solid #ff3b30; }
+    .pending { background: rgba(255,149,0,0.2); border-left: 4px solid #ff9500; }
+    .error { color: #ff6b6b; margin-top: 8px; font-size: 12px; }
+    #run-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 30px;
+      background: #0071e3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    /* 添加必要的 DOM 元素供 app.js 使用 */
+    #welcome-title, #welcome-message, #progress-percent, #progress-fill,
+    #completed-days, #completed-tasks, #total-badges, #current-level,
+    #xp-fill, #xp-value, #streak-counter, #today-task, #days-container,
+    #platform-grid, #badges-grid, #rewards-list, #gallery-grid,
+    #knowledge-preview, #parent-start-date, #parent-study-days,
+    #parent-completion-rate, #parent-last-active, #radar-chart,
+    #ability-stats, #ai-comment-content, #toast {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 添加必要的 DOM 元素供 app.js 初始化使用 -->
+  <div id="welcome-title"></div>
+  <div id="welcome-message"></div>
+  <div id="progress-percent"></div>
+  <div id="progress-fill"></div>
+  <div id="completed-days"></div>
+  <div id="completed-tasks"></div>
+  <div id="total-badges"></div>
+  <div id="current-level"></div>
+  <div id="xp-fill"></div>
+  <div id="xp-value"></div>
+  <div id="streak-counter"></div>
+  <div id="today-task"></div>
+  <div id="days-container"></div>
+  <div id="platform-grid"></div>
+  <div id="badges-grid"></div>
+  <div id="rewards-list"></div>
+  <div id="gallery-grid"></div>
+  <div id="knowledge-preview"></div>
+  <div id="parent-start-date"></div>
+  <div id="parent-study-days"></div>
+  <div id="parent-completion-rate"></div>
+  <div id="parent-last-active"></div>
+  <div id="radar-chart"></div>
+  <div id="ability-stats"></div>
+  <div id="ai-comment-content"></div>
+  <div id="toast"></div>
+
+  <div class="container">
+    <h1>🧪 AI 探险家 - 应用调试测试</h1>
+    <button id="run-btn" onclick="runTests()">运行测试</button>
+    <div id="results"></div>
+  </div>
+
+  <!-- 加载应用脚本 -->
+  <!-- 只加载 data.js，避免重复声明 LEARNING_TASKS -->
+  <script src="data.js?v=20260325"></script>
+  <script src="utils/learning-log.js?v=20260325"></script>
+  <script src="utils/reminder.js?v=20260325"></script>
+  <script src="utils/multi-child.js?v=20260325"></script>
+  <script src="utils/pdf-export.js?v=20260325"></script>
+  <script src="utils/heatmap.js?v=20260325"></script>
+  <script src="utils/goals.js?v=20260325"></script>
+  <script src="utils/statistics.js?v=20260325"></script>
+  <script src="utils/gamification.js?v=20260325"></script>
+  <script src="utils/knowledge.js?v=20260325"></script>
+  <script src="sounds.js?v=20260325"></script>
+  <script src="certificate.js?v=20260325"></script>
+  <script>
+    // 在加载 app.js 之前先检查依赖
+    console.log('检查依赖...');
+    console.log('MultiChildManager:', typeof MultiChildManager);
+    console.log('PDFExportManager:', typeof PDFExportManager);
+    console.log('LearningHeatmap:', typeof LearningHeatmap);
+    console.log('GoalManager:', typeof GoalManager);
+    // 修复：goals.js 导出的是 GoalManager 不是 GoalsManager
+    window.GoalsManager = window.GoalManager; // 让 app.js 能用
+    console.log('StatisticsManager:', typeof StatisticsManager);
+    console.log('GamificationManager:', typeof GamificationManager);
+    console.log('KnowledgeManager:', typeof KnowledgeManager);
+    console.log('soundManager:', typeof soundManager);
+    console.log('certificateGenerator:', typeof certificateGenerator);
+  </script>
+  <!-- 只在 window.app 不存在时加载 app.js -->
+  <script>
+    if (typeof window.app === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'app.js?v=20260325';
+      document.head.appendChild(script);
+    } else {
+      console.log('✅ app 已存在，跳过加载');
+    }
+  </script>
+  <script>
+    // 延迟检查 app 是否已创建
+    setTimeout(() => {
+      console.log('app:', typeof app);
+      if (typeof app !== 'undefined') {
+        console.log('app.knowledge:', app.knowledge);
+        console.log('app.multiChild:', app.multiChild);
+        console.log('app.pdfExport:', app.pdfExport);
+        console.log('app.gamification:', app.gamification);
+        console.log('app.statistics:', app.statistics);
+      }
+    }, 500);
+  </script>
+
+  <script>
+    const tests = [
+      { name: 'AI_PLATFORMS 已定义', fn: () => {
+        if (typeof AI_PLATFORMS === 'undefined') throw 'AI_PLATFORMS 未定义';
+        if (!Array.isArray(AI_PLATFORMS)) throw 'AI_PLATFORMS 不是数组';
+        if (AI_PLATFORMS.length === 0) throw 'AI_PLATFORMS 为空';
+      }},
+      { name: 'LEARNING_TASKS 已定义', fn: () => {
+        if (typeof LEARNING_TASKS === 'undefined') throw 'LEARNING_TASKS 未定义';
+        if (!Array.isArray(LEARNING_TASKS)) throw 'LEARNING_TASKS 不是数组';
+      }},
+      { name: '任务数据包含 day 字段', fn: () => {
+        for (let i = 0; i < LEARNING_TASKS.length; i++) {
+          if (typeof LEARNING_TASKS[i].day === 'undefined') {
+            throw `任务 ${i+1} 缺少 day 字段`;
+          }
+        }
+      }},
+      { name: 'BADGES 已定义', fn: () => {
+        if (typeof BADGES === 'undefined') throw 'BADGES 未定义';
+        if (!Array.isArray(BADGES)) throw 'BADGES 不是数组';
+      }},
+      { name: 'LEVELS 已定义', fn: () => {
+        if (typeof LEVELS === 'undefined') throw 'LEVELS 未定义';
+        if (!Array.isArray(LEVELS)) throw 'LEVELS 不是数组';
+      }},
+      { name: 'app 对象已创建', fn: () => {
+        if (typeof app === 'undefined') throw 'app 对象未创建';
+      }},
+      { name: 'APP_DATA 已初始化', fn: () => {
+        if (typeof APP_DATA === 'undefined') throw 'APP_DATA 未定义';
+        if (!APP_DATA.childName) throw 'childName 未初始化';
+      }},
+      { name: 'app.navigateTo 存在', fn: () => {
+        if (typeof app.navigateTo !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.loadData 存在', fn: () => {
+        if (typeof app.loadData !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.saveData 存在', fn: () => {
+        if (typeof app.saveData !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.updateWelcome 存在', fn: () => {
+        if (typeof app.updateWelcome !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.updateProgress 存在', fn: () => {
+        if (typeof app.updateProgress !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.updateLevel 存在', fn: () => {
+        if (typeof app.updateLevel !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderTasks 存在', fn: () => {
+        if (typeof app.renderTasks !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderTodayTask 存在', fn: () => {
+        if (typeof app.renderTodayTask !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.switchTaskMode 存在', fn: () => {
+        if (typeof app.switchTaskMode !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.updateTaskModeButtons 存在', fn: () => {
+        if (typeof app.updateTaskModeButtons !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderPlatforms 存在', fn: () => {
+        if (typeof app.renderPlatforms !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.openPlatform 存在', fn: () => {
+        if (typeof app.openPlatform !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderGallery 存在', fn: () => {
+        if (typeof app.renderGallery !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.showAddWorkModal 存在', fn: () => {
+        if (typeof app.showAddWorkModal !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.saveWork 存在', fn: () => {
+        if (typeof app.saveWork !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderAchievements 存在', fn: () => {
+        if (typeof app.renderAchievements !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.checkRewards 存在', fn: () => {
+        if (typeof app.checkRewards !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderKnowledge 存在', fn: () => {
+        if (typeof app.renderKnowledge !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.knowledge 已初始化', fn: () => {
+        if (typeof app.knowledge === 'undefined') throw '未初始化';
+      }},
+      { name: 'app.renderParents 存在', fn: () => {
+        if (typeof app.renderParents !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.renderAbilityRadar 存在', fn: () => {
+        if (typeof app.renderAbilityRadar !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.generateAIComment 存在', fn: () => {
+        if (typeof app.generateAIComment !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.toggleHeatmap 存在', fn: () => {
+        if (typeof app.toggleHeatmap !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.resetProgress 存在', fn: () => {
+        if (typeof app.resetProgress !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.exportData 存在', fn: () => {
+        if (typeof app.exportData !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.importData 存在', fn: () => {
+        if (typeof app.importData !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.validateImportData 存在', fn: () => {
+        if (typeof app.validateImportData !== 'function') throw '方法不存在';
+        const validData = { data: { childName: 'test', streak: 0, totalXP: 0 }, tasks: [] };
+        if (!app.validateImportData(validData)) throw '验证失败';
+      }},
+      { name: 'soundManager 已定义', fn: () => {
+        if (typeof soundManager === 'undefined') throw '未定义';
+      }},
+      { name: 'app.multiChild 已初始化', fn: () => {
+        if (typeof app.multiChild === 'undefined') throw '未初始化';
+      }},
+      { name: 'app.pdfExport 已初始化', fn: () => {
+        if (typeof app.pdfExport === 'undefined') throw '未初始化';
+      }},
+      { name: 'app.gamification 已初始化', fn: () => {
+        if (typeof app.gamification === 'undefined') throw '未初始化';
+      }},
+      { name: 'app.statistics 已初始化', fn: () => {
+        if (typeof app.statistics === 'undefined') throw '未初始化';
+      }},
+      { name: 'app.showToast 存在', fn: () => {
+        if (typeof app.showToast !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.switchTheme 存在', fn: () => {
+        if (typeof app.switchTheme !== 'function') throw '方法不存在';
+      }},
+      { name: 'app.closeAllModals 存在', fn: () => {
+        if (typeof app.closeAllModals !== 'function') throw '方法不存在';
+      }}
+    ];
+
+    function runTests() {
+      const resultsEl = document.getElementById('results');
+      resultsEl.innerHTML = '';
+      
+      let pass = 0, fail = 0;
+      
+      // 等待 app 初始化完成
+      let waitCount = 0;
+      const checkInit = () => {
+        if (typeof app !== 'undefined' && app && app.knowledge && app.multiChild && app.pdfExport && app.gamification && app.statistics) {
+          // app 已初始化完成，开始测试
+          tests.forEach((test, i) => {
+            const div = document.createElement('div');
+            div.className = 'result pending';
+            div.textContent = `⏳ ${test.name}`;
+            resultsEl.appendChild(div);
+            
+            try {
+              test.fn();
+              div.className = 'result pass';
+              div.textContent = `✅ ${test.name}`;
+              pass++;
+            } catch (e) {
+              div.className = 'result fail';
+              div.innerHTML = `❌ ${test.name}<div class="error">错误：${e.message || e}</div>`;
+              fail++;
+              console.error(`测试失败：${test.name}`, e);
+            }
+          });
+          
+          const summary = document.createElement('div');
+          summary.className = 'result';
+          summary.style.background = 'rgba(255,255,255,0.1)';
+          summary.innerHTML = `<strong>总计:</strong> ${tests.length} 项测试，✅ ${pass} 通过，❌ ${fail} 失败`;
+          resultsEl.appendChild(summary);
+        } else if (waitCount < 50) {
+          // 最多等待 5 秒
+          waitCount++;
+          setTimeout(checkInit, 100);
+        } else {
+          // 超时
+          const div = document.createElement('div');
+          div.className = 'result fail';
+          div.innerHTML = `❌ app 初始化超时<div class="error">请检查 app.js 是否正常加载</div>`;
+          resultsEl.appendChild(div);
+          
+          const summary = document.createElement('div');
+          summary.className = 'result';
+          summary.style.background = 'rgba(255,255,255,0.1)';
+          summary.innerHTML = `<strong>总计:</strong> 测试无法运行，app 未初始化`;
+          resultsEl.appendChild(summary);
+        }
+      };
+      
+      checkInit();
+    }
+  </script>
+</body>
+</html>

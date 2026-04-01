@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>重置贡献数据</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #6C5CE7 0%, #7B68EE 50%, #FF7675 100%);
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+    }
+    h1 {
+      color: #1d1d1f;
+      margin-bottom: 16px;
+    }
+    p {
+      color: #86868b;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .warning {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: left;
+      margin-bottom: 24px;
+      color: #856404;
+    }
+    button {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 8px;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ff3b30, #ff6b6b);
+      color: white;
+    }
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,59,48,0.4);
+    }
+    .btn-secondary {
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+    .btn-secondary:hover {
+      background: #e8e8ed;
+    }
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: left;
+      margin-bottom: 24px;
+      color: #155724;
+      display: none;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🗑️</div>
+    <h1>重置贡献数据</h1>
+    <p>此操作将清空所有贡献者榜单数据，包括贡献记录和贡献者信息。</p>
+    
+    <div class="warning" id="warning">
+      ⚠️ <strong>警告：</strong>此操作不可恢复！清空后需要重新提交贡献。
+    </div>
+    
+    <div class="success" id="success">
+      ✅ <strong>成功：</strong>贡献数据已清空！
+    </div>
+    
+    <div>
+      <button class="btn-danger" onclick="resetContributions()">🗑️ 确认重置</button>
+      <button class="btn-secondary" onclick="window.location.href='index.html'">返回应用</button>
+    </div>
+  </div>
+
+  <script>
+    function resetContributions() {
+      // 清除 localStorage 中的贡献数据
+      const key = 'aiExplorerKnowledge';
+      const saved = localStorage.getItem(key);
+      
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          data.contributions = [];
+          localStorage.setItem(key, JSON.stringify(data));
+          
+          // 显示成功消息
+          document.getElementById('warning').style.display = 'none';
+          document.getElementById('success').style.display = 'block';
+          
+          // 隐藏重置按钮
+          document.querySelector('.btn-danger').style.display = 'none';
+          
+          console.log('✅ 贡献数据已清空');
+        } catch (e) {
+          alert('❌ 重置失败：' + e.message);
+        }
+      } else {
+        alert('ℹ️ 暂无贡献数据');
+      }
+    }
+  </script>
+</body>
+</html>

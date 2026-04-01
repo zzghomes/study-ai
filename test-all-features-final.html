@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 AI 探险家 - 功能测试页面</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 28px; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
+    
+    .test-section {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .test-section h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .test-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border-left: 3px solid transparent;
+    }
+    .test-item.pass { border-left-color: #34c759; }
+    .test-item.fail { border-left-color: #ff3b30; }
+    .test-item.pending { border-left-color: #ff9500; }
+    
+    .test-name { font-size: 14px; }
+    .test-status {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-pass { background: rgba(52,199,89,0.2); color: #34c759; }
+    .status-fail { background: rgba(255,59,48,0.2); color: #ff3b30; }
+    .status-pending { background: rgba(255,149,0,0.2); color: #ff9500; }
+    
+    .btn-test {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-run { background: #0071e3; color: white; }
+    .btn-run:hover { background: #0077ed; }
+    
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    .summary-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .summary-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+    .summary-label { font-size: 12px; color: #888; }
+    
+    .pass .summary-value { color: #34c759; }
+    .fail .summary-value { color: #ff3b30; }
+    .pending .summary-value { color: #ff9500; }
+    
+    #run-all-btn {
+      display: block;
+      margin: 0 auto 30px;
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #0071e3, #0077ed);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #run-all-btn:hover { transform: scale(1.02); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 AI 探险家 - 功能测试</h1>
+    <p class="subtitle">全面测试应用的所有核心功能</p>
+    
+    <button id="run-all-btn" onclick="runAllTests()">▶️ 运行所有测试</button>
+    
+    <div class="summary">
+      <div class="summary-card" id="summary-total">
+        <div class="summary-value">-</div>
+        <div class="summary-label">总测试数</div>
+      </div>
+      <div class="summary-card pass" id="summary-pass">
+        <div class="summary-value">-</div>
+        <div class="summary-label">通过</div>
+      </div>
+      <div class="summary-card fail" id="summary-fail">
+        <div class="summary-value">-</div>
+        <div class="summary-label">失败</div>
+      </div>
+      <div class="summary-card pending" id="summary-pending">
+        <div class="summary-value">-</div>
+        <div class="summary-label">待运行</div>
+      </div>
+    </div>
+    
+    <div id="test-results"></div>
+  </div>
+
+  <!-- 加载应用脚本 -->
+  <script src="data.js"></script>
+  <script src="data-21days.js"></script>
+  <script src="data-14days.js"></script>
+  <script src="utils/learning-log.js"></script>
+  <script src="utils/portfolio.js"></script>
+  <script src="utils/reminder.js"></script>
+  <script src="utils/multi-child.js"></script>
+  <script src="utils/pdf-export.js"></script>
+  <script src="utils/heatmap.js"></script>
+  <script src="utils/goals.js"></script>
+  <script src="utils/statistics.js"></script>
+  <script src="utils/gamification.js"></script>
+  <script src="utils/knowledge.js"></script>
+  <script src="sounds.js"></script>
+  <script src="certificate.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    const tests = [];
+    let results = { pass: 0, fail: 0, pending: 0 };
+
+    function addTest(section, name, testFn) {
+      tests.push({ section, name, testFn });
+    }
+
+    // ===== 数据层测试 =====
+    addTest('数据层', 'AI_PLATFORMS 已定义', () => {
+      if (typeof AI_PLATFORMS === 'undefined') throw 'AI_PLATFORMS 未定义';
+      if (!Array.isArray(AI_PLATFORMS)) throw 'AI_PLATFORMS 不是数组';
+      if (AI_PLATFORMS.length === 0) throw 'AI_PLATFORMS 为空';
+    });
+
+    addTest('数据层', 'LEARNING_TASKS 已定义', () => {
+      if (typeof LEARNING_TASKS === 'undefined') throw 'LEARNING_TASKS 未定义';
+      if (!Array.isArray(LEARNING_TASKS)) throw 'LEARNING_TASKS 不是数组';
+    });
+
+    addTest('数据层', '任务数据包含 day 字段', () => {
+      for (let i = 0; i < LEARNING_TASKS.length; i++) {
+        if (typeof LEARNING_TASKS[i].day === 'undefined') {
+          throw `任务 ${i+1} 缺少 day 字段`;
+        }
+      }
+    });
+
+    addTest('数据层', 'BADGES 已定义', () => {
+      if (typeof BADGES === 'undefined') throw 'BADGES 未定义';
+      if (!Array.isArray(BADGES)) throw 'BADGES 不是数组';
+    });
+
+    addTest('数据层', 'LEVELS 已定义', () => {
+      if (typeof LEVELS === 'undefined') throw 'LEVELS 未定义';
+      if (!Array.isArray(LEVELS)) throw 'LEVELS 不是数组';
+    });
+
+    // ===== 应用初始化测试 =====
+    addTest('应用初始化', 'app 对象已创建', () => {
+      if (typeof app === 'undefined') throw 'app 对象未创建';
+    });
+
+    addTest('应用初始化', 'APP_DATA 已初始化', () => {
+      if (typeof APP_DATA === 'undefined') throw 'APP_DATA 未定义';
+      if (!APP_DATA.childName) throw 'childName 未初始化';
+    });
+
+    // ===== 核心功能测试 =====
+    addTest('核心功能', '导航功能正常', () => {
+      if (typeof app.navigateTo !== 'function') throw 'navigateTo 方法不存在';
+      app.navigateTo('home');
+    });
+
+    addTest('核心功能', '数据加载功能', () => {
+      if (typeof app.loadData !== 'function') throw 'loadData 方法不存在';
+      app.loadData();
+    });
+
+    addTest('核心功能', '数据保存功能', () => {
+      if (typeof app.saveData !== 'function') throw 'saveData 方法不存在';
+      app.saveData();
+    });
+
+    addTest('核心功能', '欢迎信息更新', () => {
+      if (typeof app.updateWelcome !== 'function') throw 'updateWelcome 方法不存在';
+    });
+
+    addTest('核心功能', '进度更新功能', () => {
+      if (typeof app.updateProgress !== 'function') throw 'updateProgress 方法不存在';
+    });
+
+    addTest('核心功能', '等级更新功能', () => {
+      if (typeof app.updateLevel !== 'function') throw 'updateLevel 方法不存在';
+    });
+
+    // ===== 任务系统测试 =====
+    addTest('任务系统', '任务列表渲染', () => {
+      if (typeof app.renderTasks !== 'function') throw 'renderTasks 方法不存在';
+    });
+
+    addTest('任务系统', '今日任务渲染', () => {
+      if (typeof app.renderTodayTask !== 'function') throw 'renderTodayTask 方法不存在';
+    });
+
+    addTest('任务系统', '任务模式切换', () => {
+      if (typeof app.switchTaskMode !== 'function') throw 'switchTaskMode 方法不存在';
+    });
+
+    addTest('任务系统', '任务模式按钮更新', () => {
+      if (typeof app.updateTaskModeButtons !== 'function') throw 'updateTaskModeButtons 方法不存在';
+    });
+
+    // ===== 平台功能测试 =====
+    addTest('平台功能', '平台列表渲染', () => {
+      if (typeof app.renderPlatforms !== 'function') throw 'renderPlatforms 方法不存在';
+    });
+
+    addTest('平台功能', '打开平台功能', () => {
+      if (typeof app.openPlatform !== 'function') throw 'openPlatform 方法不存在';
+    });
+
+    // ===== 作品墙测试 =====
+    addTest('作品墙', '作品列表渲染', () => {
+      if (typeof app.renderGallery !== 'function') throw 'renderGallery 方法不存在';
+    });
+
+    addTest('作品墙', '添加作品模态框', () => {
+      if (typeof app.showAddWorkModal !== 'function') throw 'showAddWorkModal 方法不存在';
+    });
+
+    addTest('作品墙', '保存作品功能', () => {
+      if (typeof app.saveWork !== 'function') throw 'saveWork 方法不存在';
+    });
+
+    // ===== 成就系统测试 =====
+    addTest('成就系统', '成就列表渲染', () => {
+      if (typeof app.renderAchievements !== 'function') throw 'renderAchievements 方法不存在';
+    });
+
+    addTest('成就系统', '奖励检查功能', () => {
+      if (typeof app.checkRewards !== 'function') throw 'checkRewards 方法不存在';
+    });
+
+    // ===== 知识库测试 =====
+    addTest('知识库', '知识库渲染', () => {
+      if (typeof app.renderKnowledge !== 'function') throw 'renderKnowledge 方法不存在';
+    });
+
+    addTest('知识库', '知识管理器初始化', () => {
+      if (typeof app.knowledge === 'undefined') throw 'knowledge 管理器未初始化';
+    });
+
+    // ===== 家长中心测试 =====
+    addTest('家长中心', '家长中心渲染', () => {
+      if (typeof app.renderParents !== 'function') throw 'renderParents 方法不存在';
+    });
+
+    addTest('家长中心', '雷达图功能', () => {
+      if (typeof app.renderAbilityRadar !== 'function') throw 'renderAbilityRadar 方法不存在';
+    });
+
+    addTest('家长中心', 'AI 评语生成', () => {
+      if (typeof app.generateAIComment !== 'function') throw 'generateAIComment 方法不存在';
+    });
+
+    addTest('家长中心', '热力图切换', () => {
+      if (typeof app.toggleHeatmap !== 'function') throw 'toggleHeatmap 方法不存在';
+    });
+
+    // ===== 数据管理测试 =====
+    addTest('数据管理', '重置进度功能', () => {
+      if (typeof app.resetProgress !== 'function') throw 'resetProgress 方法不存在';
+    });
+
+    addTest('数据管理', '导出数据功能', () => {
+      if (typeof app.exportData !== 'function') throw 'exportData 方法不存在';
+    });
+
+    addTest('数据管理', '导入数据功能', () => {
+      if (typeof app.importData !== 'function') throw 'importData 方法不存在';
+    });
+
+    addTest('数据管理', '数据验证功能', () => {
+      if (typeof app.validateImportData !== 'function') throw 'validateImportData 方法不存在';
+      const validData = { data: { childName: 'test', streak: 0, totalXP: 0 }, tasks: [] };
+      if (!app.validateImportData(validData)) throw '数据验证失败';
+    });
+
+    // ===== 工具模块测试 =====
+    addTest('工具模块', '音效管理器', () => {
+      if (typeof soundManager === 'undefined') throw 'soundManager 未定义';
+    });
+
+    addTest('工具模块', '多孩子管理器', () => {
+      if (typeof app.multiChild === 'undefined') throw 'multiChild 未初始化';
+    });
+
+    addTest('工具模块', 'PDF 导出管理器', () => {
+      if (typeof app.pdfExport === 'undefined') throw 'pdfExport 未初始化';
+    });
+
+    addTest('工具模块', '游戏化管理器', () => {
+      if (typeof app.gamification === 'undefined') throw 'gamification 未初始化';
+    });
+
+    addTest('工具模块', '统计管理器', () => {
+      if (typeof app.statistics === 'undefined') throw 'statistics 未初始化';
+    });
+
+    // ===== UI 功能测试 =====
+    addTest('UI 功能', 'Toast 提示', () => {
+      if (typeof app.showToast !== 'function') throw 'showToast 方法不存在';
+    });
+
+    addTest('UI 功能', '主题切换', () => {
+      if (typeof app.switchTheme !== 'function') throw 'switchTheme 方法不存在';
+    });
+
+    addTest('UI 功能', '模态框关闭', () => {
+      if (typeof app.closeAllModals !== 'function') throw 'closeAllModals 方法不存在';
+    });
+
+    // 渲染测试结果
+    function renderResults() {
+      const container = document.getElementById('test-results');
+      const sections = {};
+      
+      tests.forEach((test, index) => {
+        if (!sections[test.section]) sections[test.section] = [];
+        sections[test.section].push({ ...test, index });
+      });
+
+      let html = '';
+      for (const [sectionName, sectionTests] of Object.entries(sections)) {
+        html += `
+          <div class="test-section">
+            <h2>📋 ${sectionName}</h2>
+            ${sectionTests.map(test => {
+              const result = test.result || { status: 'pending' };
+              const statusClass = result.status === 'pass' ? 'pass' : result.status === 'fail' ? 'fail' : 'pending';
+              const statusText = result.status === 'pass' ? '通过' : result.status === 'fail' ? '失败' : '待运行';
+              const statusBadge = result.status === 'pass' ? 'status-pass' : result.status === 'fail' ? 'status-fail' : 'status-pending';
+              return `
+                <div class="test-item ${statusClass}" id="test-${test.index}">
+                  <span class="test-name">${test.name}</span>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <span class="test-status ${statusBadge}">${statusText}</span>
+                    ${result.error ? `<span style="color: #ff3b30; font-size: 12px;">${result.error}</span>` : ''}
+                    <button class="btn-test btn-run" onclick="runTest(${test.index})">运行</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+      updateSummary();
+    }
+
+    function runTest(index) {
+      const test = tests[index];
+      try {
+        test.testFn();
+        test.result = { status: 'pass' };
+        results.pass++;
+      } catch (e) {
+        console.error(`测试失败：${test.name}`, e);
+        test.result = { status: 'fail', error: String(e) };
+        results.fail++;
+      }
+      results.pending = tests.length - results.pass - results.fail;
+      renderResults();
+    }
+
+    function runAllTests() {
+      results = { pass: 0, fail: 0, pending: 0 };
+      tests.forEach((_, index) => runTest(index));
+    }
+
+    function updateSummary() {
+      document.querySelector('#summary-total .summary-value').textContent = tests.length;
+      document.querySelector('#summary-pass .summary-value').textContent = results.pass;
+      document.querySelector('#summary-fail .summary-value').textContent = results.fail;
+      document.querySelector('#summary-pending .summary-value').textContent = results.pending;
+    }
+
+    // 初始化
+    renderResults();
+  </script>
+</body>
+</html>

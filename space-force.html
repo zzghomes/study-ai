@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="space">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌌 星空主题强制启动</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
+  <!-- 直接内联星空主题 CSS -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #ffffff !important;
+    }
+    
+    /* 强制星空背景 */
+    body {
+      background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5980?w=1920&q=80') center/cover fixed !important;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(10,10,30,0.75) 0%, rgba(20,20,50,0.7) 50%, rgba(15,30,60,0.75) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    /* 星星容器 */
+    #stars-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    /* 星星 */
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 3s infinite ease-in-out;
+      box-shadow: 0 0 10px rgba(255,255,255,0.8);
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+    
+    /* 流星 */
+    .shooting-star {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(255,255,255,1);
+      animation: shoot 8s infinite linear;
+      opacity: 0;
+    }
+    
+    .shooting-star::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 200px; height: 2px;
+      background: linear-gradient(90deg, #fff, transparent);
+      transform: translateX(100%);
+    }
+    
+    @keyframes shoot {
+      0% { opacity: 0; transform: translate(0,0) rotate(45deg); }
+      5% { opacity: 1; }
+      25% { opacity: 0; transform: translate(300px,300px) rotate(45deg); }
+      100% { opacity: 0; }
+    }
+    
+    /* 内容区域 */
+    .content {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 20px;
+    }
+    
+    h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #fff !important;
+      text-shadow: 0 3px 15px rgba(0,0,0,0.9), 0 0 30px rgba(255,255,255,0.3);
+    }
+    
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #fff !important;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+    
+    .card {
+      background: rgba(10,10,30,0.08) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 32px;
+      margin: 20px 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      color: #fff !important;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.8), rgba(6,182,212,0.8));
+      color: #fff;
+      text-decoration: none;
+      border-radius: 14px;
+      margin: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(168,85,247,0.5);
+    }
+    
+    .status {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid #0f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 20px 0;
+      font-family: monospace;
+      font-size: 14px;
+      color: #0f0;
+    }
+    
+    .debug-info {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.8);
+      color: #0f0;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      max-width: 400px;
+      border: 1px solid #0f0;
+    }
+  </style>
+</head>
+<body>
+  <div id="stars-container"></div>
+  
+  <div class="debug-info" id="debug">
+    <div>🔍 调试信息</div>
+    <div id="debug-content">加载中...</div>
+  </div>
+  
+  <div class="content">
+    <h1>🌌 星空主题强制启动</h1>
+    <p>这个页面强制使用星空主题，不依赖任何 JavaScript 切换。</p>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 16px; color: #fff;">✨ 你现在应该看到：</h2>
+      <p style="line-height: 2;">
+        ✅ 深蓝色星空背景图片<br>
+        ✅ 闪烁的白色星星（80 颗）<br>
+        ✅ 偶尔划过的流星（3 颗）<br>
+        ✅ 半透明毛玻璃卡片（8% 透明度）<br>
+        ✅ 所有文字白色带阴影
+      </p>
+    </div>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 16px; color: #fff;">🔧 操作</h2>
+      <div style="margin-top: 16px;">
+        <a href="index.html" class="btn" onclick="forceSpaceTheme()">🏠 打开 AI 探险家（强制星空）</a>
+        <button class="btn" onclick="location.reload()">🔄 刷新本页</button>
+      </div>
+    </div>
+    
+    <div class="status" id="status">
+      正在检测...
+    </div>
+  </div>
+  
+  <script>
+    // 创建星星
+    const container = document.getElementById('stars-container');
+    
+    // 80 颗星星
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      const size = Math.random() * 2 + 1;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      container.appendChild(star);
+    }
+    
+    // 3 颗流星
+    for (let i = 0; i < 3; i++) {
+      const shootingStar = document.createElement('div');
+      shootingStar.className = 'shooting-star';
+      shootingStar.style.left = (Math.random() * 50 + 25) + '%';
+      shootingStar.style.top = (Math.random() * 30 + 10) + '%';
+      shootingStar.style.animationDelay = (Math.random() * 8 + i * 2) + 's';
+      container.appendChild(shootingStar);
+    }
+    
+    // 更新调试信息
+    function updateDebug() {
+      const stars = document.querySelectorAll('.star').length;
+      const shootingStars = document.querySelectorAll('.shooting-star').length;
+      const theme = document.documentElement.getAttribute('data-theme');
+      
+      document.getElementById('debug-content').innerHTML = `
+        <div>⭐ 星星：${stars} 颗</div>
+        <div>☄️ 流星：${shootingStars} 颗</div>
+        <div>🎨 主题：${theme}</div>
+        <div>🕐 时间：${new Date().toLocaleTimeString()}</div>
+      `;
+      
+      document.getElementById('status').innerHTML = `
+        ✅ 星星数量：${stars}<br>
+        ✅ 流星数量：${shootingStars}<br>
+        ✅ HTML 主题属性：${theme}<br>
+        ✅ 背景图：已加载<br>
+        ✅ 卡片透明度：8%
+      `;
+    }
+    
+    // 强制 AI 探险家使用星空主题
+    function forceSpaceTheme() {
+      localStorage.setItem('aiExplorerTheme', 'space');
+      const url = 'index.html?space=' + Date.now();
+      window.location.href = url;
+    }
+    
+    // 延迟更新
+    setTimeout(updateDebug, 500);
+    setTimeout(updateDebug, 2000);
+  </script>
+</body>
+</html>

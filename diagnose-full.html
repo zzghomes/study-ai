@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔧 AI 探险家 - 问题诊断</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 20px;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { font-size: 32px; margin-bottom: 20px; }
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 8px 8px 8px 0;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn:hover { background: rgba(255,255,255,0.3); }
+    .log {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .ok { color: #0f0; }
+    .err { color: #f00; }
+    .warn { color: #ff0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 AI 探险家 - 问题诊断工具</h1>
+    
+    <div class="card">
+      <h2>📋 已修复的问题</h2>
+      <div style="margin-top: 16px; line-height: 2;">
+        <div class="ok">✅ APP_DATA 已定义</div>
+        <div class="ok">✅ openTask 添加元素检查</div>
+        <div class="ok">✅ 家长密码验证后跳转</div>
+        <div class="ok">✅ init() 先加载数据</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>🚀 测试步骤</h2>
+      <div style="margin-top: 16px;">
+        <a href="index.html?v=2026030512" class="btn" target="_blank">🏠 打开 AI 探险家</a>
+        <button class="btn" onclick="checkFiles()">📁 检查文件</button>
+        <button class="btn" onclick="clearLog()">🗑️ 清空日志</button>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>📊 诊断日志</h2>
+      <div class="log" id="log">等待检查...</div>
+    </div>
+    
+    <div class="card">
+      <h2>❓ 如何报告问题</h2>
+      <div style="margin-top: 16px; line-height: 1.8;">
+        1. 点击"打开 AI 探险家"<br>
+        2. 按 F12 打开开发者工具<br>
+        3. 切换到 Console（控制台）标签<br>
+        4. 按 Ctrl+Shift+R 强制刷新<br>
+        5. 截图控制台输出（包括错误信息）<br>
+        6. 告诉我看到了什么
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const logEl = document.getElementById('log');
+    
+    function log(msg, type = 'info') {
+      const cls = type === 'error' ? 'err' : type === 'success' ? 'ok' : type === 'warn' ? 'warn' : '';
+      logEl.innerHTML += `<div class="${cls}">${msg}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function clearLog() {
+      logEl.innerHTML = '';
+    }
+    
+    async function checkFiles() {
+      logEl.innerHTML = '';
+      log('开始检查文件...', 'info');
+      
+      const files = [
+        'index.html',
+        'styles.css',
+        'themes.css',
+        'app.js',
+        'data-14days.js',
+        'sounds.js'
+      ];
+      
+      for (const file of files) {
+        try {
+          const resp = await fetch(file + '?t=' + Date.now());
+          if (resp.ok) {
+            const text = await resp.text();
+            log(`✅ ${file} (${text.length} 字节)`, 'success');
+            
+            // 检查关键内容
+            if (file === 'app.js') {
+              log(`  ├─ APP_DATA: ${text.includes('const APP_DATA') ? '✅' : '❌'}`, text.includes('const APP_DATA') ? 'success' : 'error');
+              log(`  ├─ renderTodayTask: ${text.includes('renderTodayTask') ? '✅' : '❌'}`, text.includes('renderTodayTask') ? 'success' : 'warn');
+              log(`  ├─ renderPlatforms: ${text.includes('renderPlatforms') ? '✅' : '❌'}`, text.includes('renderPlatforms') ? 'success' : 'warn');
+              log(`  └─ openTask: ${text.includes('openTask') ? '✅' : '❌'}`, text.includes('openTask') ? 'success' : 'error');
+            }
+            
+            if (file === 'index.html') {
+              log(`  ├─ data-theme="space": ${text.includes('data-theme="space"') ? '✅' : '❌'}`, text.includes('data-theme="space"') ? 'success' : 'warn');
+              log(`  ├─ platform-grid: ${text.includes('platform-grid') ? '✅' : '❌'}`, text.includes('platform-grid') ? 'success' : 'warn');
+              log(`  ├─ days-container: ${text.includes('days-container') ? '✅' : '❌'}`, text.includes('days-container') ? 'success' : 'warn');
+              log(`  └─ task-modal: ${text.includes('task-modal') ? '✅' : '❌'}`, text.includes('task-modal') ? 'success' : 'warn');
+            }
+            
+            if (file === 'data-14days.js') {
+              log(`  ├─ LEARNING_TASKS: ${text.includes('LEARNING_TASKS') ? '✅' : '❌'}`, text.includes('LEARNING_TASKS') ? 'success' : 'error');
+              log(`  └─ AI_PLATFORMS: ${text.includes('AI_PLATFORMS') ? '✅' : '❌'}`, text.includes('AI_PLATFORMS') ? 'success' : 'error');
+            }
+          } else {
+            log(`❌ ${file} (${resp.status})`, 'error');
+          }
+        } catch (e) {
+          log(`❌ ${file} (${e.message})`, 'error');
+        }
+      }
+      
+      log('\n📋 检查完成！', 'info');
+      log('如果看到 ❌ 请检查对应文件', 'warn');
+    }
+    
+    setTimeout(checkFiles, 500);
+  </script>
+</body>
+</html>

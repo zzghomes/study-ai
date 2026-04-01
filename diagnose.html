@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 AI 探险家 - 诊断工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { font-size: 32px; margin-bottom: 20px; }
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .log {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    .warn { color: #ff0; }
+    .info { color: #0ff; }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 8px 8px 8px 0;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+    }
+    .btn:hover { background: rgba(255,255,255,0.3); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 AI 探险家 - 诊断工具</h1>
+    
+    <div class="card">
+      <h2>📋 操作</h2>
+      <div style="margin-top: 16px;">
+        <button class="btn" onclick="runDiagnosis()">🔍 运行诊断</button>
+        <button class="btn" onclick="clearLog()">🗑️ 清空日志</button>
+        <a href="index.html" class="btn" target="_blank">🏠 打开 AI 探险家</a>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>📊 诊断结果</h2>
+      <div class="log" id="log">等待诊断...</div>
+    </div>
+  </div>
+  
+  <script>
+    const logEl = document.getElementById('log');
+    
+    function log(msg, type = 'info') {
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warn' ? '⚠️' : 'ℹ️';
+      const html = `<div><span class="${type}">[${prefix}]</span> ${msg}</div>`;
+      logEl.innerHTML += html;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function clearLog() {
+      logEl.innerHTML = '日志已清空';
+    }
+    
+    async function runDiagnosis() {
+      logEl.innerHTML = '';
+      log('开始诊断...', 'info');
+      
+      try {
+        // 检查 styles.css
+        log('检查 styles.css...', 'info');
+        const stylesResp = await fetch('styles.css?v=' + Date.now());
+        log(`styles.css: ${stylesResp.ok ? '✅ 可访问' : '❌ 无法访问'} (${stylesResp.status})`, stylesResp.ok ? 'success' : 'error');
+        
+        // 检查 themes.css
+        log('检查 themes.css...', 'info');
+        const themesResp = await fetch('themes.css?v=' + Date.now());
+        log(`themes.css: ${themesResp.ok ? '✅ 可访问' : '❌ 无法访问'} (${themesResp.status})`, themesResp.ok ? 'success' : 'error');
+        
+        // 检查 sounds.js
+        log('检查 sounds.js...', 'info');
+        const soundsResp = await fetch('sounds.js?v=' + Date.now());
+        log(`sounds.js: ${soundsResp.ok ? '✅ 可访问' : '❌ 无法访问'} (${soundsResp.status})`, soundsResp.ok ? 'success' : 'error');
+        
+        // 检查 data-14days.js
+        log('检查 data-14days.js...', 'info');
+        const dataResp = await fetch('data-14days.js?v=' + Date.now());
+        log(`data-14days.js: ${dataResp.ok ? '✅ 可访问' : '❌ 无法访问'} (${dataResp.status})`, dataResp.ok ? 'success' : 'error');
+        
+        if (dataResp.ok) {
+          const dataText = await dataResp.text();
+          log(`data-14days.js 大小：${dataText.length} 字节`, 'info');
+          log(`包含 LEARNING_TASKS: ${dataText.includes('LEARNING_TASKS') ? '✅' : '❌'}`, dataText.includes('LEARNING_TASKS') ? 'success' : 'error');
+          log(`包含 AI_PLATFORMS: ${dataText.includes('AI_PLATFORMS') ? '✅' : '❌'}`, dataText.includes('AI_PLATFORMS') ? 'success' : 'error');
+        }
+        
+        // 检查 app.js
+        log('检查 app.js...', 'info');
+        const appResp = await fetch('app.js?v=' + Date.now());
+        log(`app.js: ${appResp.ok ? '✅ 可访问' : '❌ 无法访问'} (${appResp.status})`, appResp.ok ? 'success' : 'error');
+        
+        if (appResp.ok) {
+          const appText = await appResp.text();
+          log(`app.js 大小：${appText.length} 字节`, 'info');
+          log(`包含 renderTodayTask: ${appText.includes('renderTodayTask') ? '✅' : '❌'}`, appText.includes('renderTodayTask') ? 'success' : 'warn');
+          log(`包含 renderPlatforms: ${appText.includes('renderPlatforms') ? '✅' : '❌'}`, appText.includes('renderPlatforms') ? 'success' : 'warn');
+          log(`包含 renderTasks: ${appText.includes('renderTasks') ? '✅' : '❌'}`, appText.includes('renderTasks') ? 'success' : 'warn');
+        }
+        
+        // 检查 index.html
+        log('检查 index.html...', 'info');
+        const htmlResp = await fetch('index.html?v=' + Date.now());
+        if (htmlResp.ok) {
+          const htmlText = await htmlResp.text();
+          log(`index.html: ✅ 可访问`, 'success');
+          log(`包含 data-theme="space": ${htmlText.includes('data-theme="space"') ? '✅' : '❌'}`, htmlText.includes('data-theme="space"') ? 'success' : 'warn');
+          log(`包含 platform-grid: ${htmlText.includes('platform-grid') ? '✅' : '❌'}`, htmlText.includes('platform-grid') ? 'success' : 'warn');
+          log(`包含 days-container: ${htmlText.includes('days-container') ? '✅' : '❌'}`, htmlText.includes('days-container') ? 'success' : 'warn');
+          log(`包含 task-modal: ${htmlText.includes('task-modal') ? '✅' : '❌'}`, htmlText.includes('task-modal') ? 'success' : 'warn');
+        }
+        
+        log('\n📋 诊断完成！', 'info');
+        log('如果看到 ❌ 错误，请检查对应文件是否存在或路径正确', 'warn');
+        
+      } catch (e) {
+        log(`诊断错误：${e.message}`, 'error');
+      }
+    }
+    
+    // 自动运行
+    setTimeout(runDiagnosis, 500);
+  </script>
+</body>
+</html>

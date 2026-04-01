@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌌 星空主题 - 控制台测试</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+    }
+    .log {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    .warn { color: #ff0; }
+    .info { color: #0ff; }
+    h1 { margin-bottom: 10px; }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #333;
+      color: #0f0;
+      border: 1px solid #0f0;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+      text-decoration: none;
+    }
+    .btn:hover { background: #444; }
+  </style>
+</head>
+<body>
+  <h1>🔍 AI 探险家星空主题 - 控制台测试</h1>
+  <p>按 <strong>F12</strong> 打开浏览器控制台，查看详细信息</p>
+  
+  <div style="margin: 20px 0;">
+    <a href="index.html" class="btn">🏠 打开 AI 探险家</a>
+    <a href="space-simple.html" class="btn">✨ 简单测试版</a>
+    <a href="#" class="btn" onclick="runTests(); return false;">🔄 重新测试</a>
+  </div>
+  
+  <div class="log" id="log">等待测试...</div>
+  
+  <script>
+    const logEl = document.getElementById('log');
+    const logs = [];
+    
+    function log(msg, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warn' ? '⚠️' : 'ℹ️';
+      logs.push(`[${time}] ${prefix} ${msg}`);
+      logEl.textContent = logs.join('\n');
+      console.log(`[${type.toUpperCase()}] ${msg}`);
+    }
+    
+    async function runTests() {
+      logs.length = 0;
+      logEl.textContent = '开始测试...\n';
+      
+      log('测试 1: 检查页面加载', 'info');
+      await sleep(500);
+      log('页面已加载', 'success');
+      
+      log('测试 2: 创建星星容器', 'info');
+      const container = document.createElement('div');
+      container.id = 'test-stars';
+      container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+      document.body.appendChild(container);
+      log('星星容器已创建', 'success');
+      
+      log('测试 3: 创建 50 颗测试星星', 'info');
+      for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.style.cssText = `
+          position: absolute;
+          background: #fff;
+          border-radius: 50%;
+          width: ${Math.random() * 2 + 1}px;
+          height: ${Math.random() * 2 + 1}px;
+          left: ${Math.random() * 100}%;
+          top: ${Math.random() * 100}%;
+          box-shadow: 0 0 5px #fff;
+          animation: twinkle ${Math.random() * 2 + 2}s infinite;
+        `;
+        container.appendChild(star);
+      }
+      
+      // 添加闪烁动画
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.5); }
+        }
+      `;
+      document.head.appendChild(style);
+      log('50 颗星星已创建并开始闪烁', 'success');
+      
+      log('测试 4: 创建流星', 'info');
+      for (let i = 0; i < 3; i++) {
+        const shootingStar = document.createElement('div');
+        shootingStar.style.cssText = `
+          position: absolute;
+          width: 3px;
+          height: 3px;
+          background: #fff;
+          border-radius: 50%;
+          left: ${30 + i * 20}%;
+          top: ${20 + i * 10}%;
+          box-shadow: 0 0 15px #fff;
+          animation: shoot 5s infinite linear;
+          animation-delay: ${i * 2}s;
+        `;
+        container.appendChild(shootingStar);
+      }
+      
+      // 添加流星动画
+      const shootStyle = document.createElement('style');
+      shootStyle.textContent = `
+        @keyframes shoot {
+          0% { transform: translate(0, 0); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translate(300px, 300px); opacity: 0; }
+          100% { opacity: 0; }
+        }
+      `;
+      document.head.appendChild(shootStyle);
+      log('3 颗流星已创建', 'success');
+      
+      log('测试 5: 应用星空背景', 'info');
+      document.body.style.background = `
+        linear-gradient(135deg, rgba(10,10,30,0.9), rgba(20,20,50,0.8)),
+        url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5980?w=1920&q=80')
+        center/cover fixed
+      `;
+      log('星空背景已应用', 'success');
+      
+      log('\n🎉 所有测试完成！', 'success');
+      log('你应该看到：', 'info');
+      log('  • 黑色背景上有 50 颗闪烁的白点（星星）', 'info');
+      log('  • 从左上到右下的白色光迹（流星）', 'info');
+      log('  • 深蓝色星空背景图片', 'info');
+      log('\n如果看不到，请检查浏览器控制台是否有错误', 'warn');
+    }
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // 自动运行测试
+    window.addEventListener('load', () => {
+      setTimeout(runTests, 500);
+    });
+  </script>
+</body>
+</html>

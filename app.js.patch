@@ -1,0 +1,18 @@
+// 请查找并替换以下内容（在 renderKnowledge 函数中）：
+
+// 1. 提示词模板卡片（showTemplatesModal 调用处）
+// 查找：background: var(--card-bg);
+// 替换为：background: rgba(235, 235, 235, 0.25);
+
+// 2. AI 术语词典卡片（showTermsModal 调用处）
+// 查找：background: var(--card-bg);
+// 替换为：background: rgba(235, 235, 235, 0.25);
+
+// 3. AI 平台百科卡片（showPlatformsModal 调用处）
+// 查找：background: var(--card-bg);
+// 替换为：background: rgba(235, 235, 235, 0.25);
+
+// 统一样式特点：
+// - 浅灰莫兰迪色：rgba(235, 235, 235, 0.25) - 高透明度
+// - 磨砂玻璃：backdrop-filter: blur(40px) saturate(180%)
+// - 边框：1px solid rgba(255, 255, 255, 0.6)

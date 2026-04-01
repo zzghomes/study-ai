@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌌 星空主题 - 直接测试</title>
+  <!-- 直接内联所有 CSS，不依赖外部文件 -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #fff;
+    }
+    
+    /* 直接硬编码星空背景，不依赖任何变量 */
+    body {
+      background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5980?w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+    
+    /* 深色遮罩层 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(10,10,30,0.85) 0%, rgba(20,20,50,0.75) 50%, rgba(15,30,60,0.80) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    /* 星星容器 */
+    #stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    /* 星星 */
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 3s infinite ease-in-out;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+    
+    /* 流星 */
+    .shooting-star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+      animation: shoot 6s infinite linear;
+    }
+    
+    .shooting-star::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 150px;
+      height: 2px;
+      background: linear-gradient(90deg, #fff, transparent);
+      transform: translateX(-100%);
+    }
+    
+    @keyframes shoot {
+      0% { transform: translate(0, 0); opacity: 0; }
+      10% { opacity: 1; }
+      30% { transform: translate(400px, 400px); opacity: 0; }
+      100% { opacity: 0; }
+    }
+    
+    /* 内容区域 */
+    .content {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 80px 20px;
+    }
+    
+    h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .status {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #0f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      font-family: monospace;
+      font-size: 14px;
+      color: #0f0;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 10px 10px 10px 0;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+    }
+    
+    .btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="stars"></div>
+  
+  <div class="content">
+    <h1>🌌 星空背景测试</h1>
+    
+    <div class="status" id="status">
+      正在检测...
+    </div>
+    
+    <div class="card">
+      <h2>✅ 如果你看到：</h2>
+      <p style="margin: 15px 0; line-height: 1.8;">
+        • 深蓝色星空背景图片<br>
+        • 闪烁的白色星星（至少 50 颗）<br>
+        • 偶尔划过的流星<br>
+        • 毛玻璃效果的卡片
+      </p>
+      <p><strong>说明浏览器支持所有特效！✨</strong></p>
+    </div>
+    
+    <div class="card">
+      <h2>🔧 测试按钮</h2>
+      <div style="margin-top: 15px;">
+        <a class="btn" onclick="checkStatus()">🔍 重新检测</a>
+        <a class="btn" onclick="addMoreStars()">⭐ 添加更多星星</a>
+        <a class="btn" onclick="location.reload()">🔄 刷新页面</a>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>📊 统计</h2>
+      <div id="stats" style="margin-top: 15px; font-size: 18px;"></div>
+    </div>
+  </div>
+  
+  <script>
+    const starsContainer = document.getElementById('stars');
+    let starCount = 0;
+    let shootingStarCount = 0;
+    
+    // 创建星星
+    function createStars(count) {
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        const size = Math.random() * 2 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.animationDelay = Math.random() * 3 + 's';
+        star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        starsContainer.appendChild(star);
+        starCount++;
+      }
+    }
+    
+    // 创建流星
+    function createShootingStars(count) {
+      for (let i = 0; i < count; i++) {
+        const shootingStar = document.createElement('div');
+        shootingStar.className = 'shooting-star';
+        shootingStar.style.left = (Math.random() * 60 + 20) + '%';
+        shootingStar.style.top = (Math.random() * 40 + 10) + '%';
+        shootingStar.style.animationDelay = (Math.random() * 6 + i * 2) + 's';
+        starsContainer.appendChild(shootingStar);
+        shootingStarCount++;
+      }
+    }
+    
+    // 初始化
+    createStars(80);
+    createShootingStars(4);
+    
+    // 检测状态
+    function checkStatus() {
+      const computedStyle = window.getComputedStyle(document.body);
+      const bgImage = computedStyle.backgroundImage;
+      const stars = document.querySelectorAll('.star').length;
+      const shootingStars = document.querySelectorAll('.shooting-star').length;
+      
+      document.getElementById('status').innerHTML = `
+        <div><strong>检测结果：</strong></div>
+        <div>背景图：${bgImage.includes('unsplash') ? '✅ 已加载' : '❌ 未加载'}</div>
+        <div>星星数量：${stars} 颗</div>
+        <div>流星数量：${shootingStars} 颗</div>
+        <div>背景遮罩：${window.getComputedStyle(document.body, '::before').content !== 'none' ? '✅ 存在' : '❌ 不存在'}</div>
+        <div>当前时间：${new Date().toLocaleTimeString()}</div>
+      `;
+      
+      document.getElementById('stats').innerHTML = `
+        <div>⭐ 星星总数：<strong>${stars}</strong></div>
+        <div>☄️ 流星总数：<strong>${shootingStars}</strong></div>
+        <div>🎨 背景：<strong>${bgImage.substring(0, 80)}...</strong></div>
+      `;
+    }
+    
+    // 添加更多星星
+    function addMoreStars() {
+      createStars(50);
+      checkStatus();
+    }
+    
+    // 延迟检测
+    setTimeout(checkStatus, 1000);
+    setTimeout(checkStatus, 3000);
+  </script>
+</body>
+</html>

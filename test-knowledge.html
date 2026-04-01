@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识库功能测试</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #fff;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .test-section {
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .test-section h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .test-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .test-result {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .pass { color: #34c759; }
+    .fail { color: #ff3b30; }
+    .pending { color: #ff9500; }
+    
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .modal-large {
+      max-width: 1000px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .modal-header h3 {
+      font-size: 22px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .modal-body {
+      color: #ccc;
+    }
+    
+    /* 术语卡片样式 */
+    .term-card {
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border-left: 4px solid #34c759;
+      margin-bottom: 16px;
+    }
+    .term-card h4 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .term-card .full-name {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .term-card .explanation {
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .term-card .example {
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .term-card .example-title {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .term-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .term-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+    }
+    
+    /* 平台卡片样式 */
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .platform-card {
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .platform-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .platform-icon {
+      font-size: 32px;
+    }
+    .platform-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .platform-company {
+      font-size: 12px;
+      color: #888;
+    }
+    .platform-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #aaa;
+      margin-bottom: 12px;
+    }
+    .platform-strengths {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .strength-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      background: rgba(52,199,89,0.2);
+      color: #34c759;
+      border-radius: 6px;
+    }
+    .platform-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #888;
+    }
+    .platform-link {
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+      border-radius: 8px;
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+    }
+    
+    .category-section {
+      margin-bottom: 32px;
+    }
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .category-icon {
+      font-size: 24px;
+    }
+    
+    .sort-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .sort-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+    .sort-btn.active {
+      background: rgba(108, 92, 231, 0.5);
+      border-color: #6C5CE7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 知识库功能测试页面</h1>
+    
+    <!-- 测试区域 1: 按钮点击测试 -->
+    <div class="test-section">
+      <h2>📋 测试 1: 按钮点击功能</h2>
+      <div class="test-buttons">
+        <button class="btn btn-primary" onclick="testShowResources()">📖 学习资源</button>
+        <button class="btn btn-secondary" onclick="testShowTemplates()">📝 提示词模板</button>
+        <button class="btn btn-secondary" onclick="testShowFavorites()">⭐ 我的收藏</button>
+        <button class="btn btn-secondary" onclick="testShowTerms()">📖 AI 术语词典</button>
+        <button class="btn btn-secondary" onclick="testShowPlatforms()">🌐 AI 平台百科</button>
+      </div>
+      <div class="test-result" id="click-test-result">
+        <span class="pending">⏳ 点击任意按钮进行测试...</span>
+      </div>
+    </div>
+    
+    <!-- 测试区域 2: AI 术语数据测试 -->
+    <div class="test-section">
+      <h2>📚 测试 2: AI 术语数据</h2>
+      <div id="terms-test-result" class="test-result">
+        <span class="pending">⏳ 加载中...</span>
+      </div>
+    </div>
+    
+    <!-- 测试区域 3: AI 平台数据测试 -->
+    <div class="test-section">
+      <h2>🌐 测试 3: AI 平台数据</h2>
+      <div id="platforms-test-result" class="test-result">
+        <span class="pending">⏳ 加载中...</span>
+      </div>
+    </div>
+    
+    <!-- 测试区域 4: 排序功能测试 -->
+    <div class="test-section">
+      <h2>🔄 测试 4: 排序功能</h2>
+      <div class="sort-buttons">
+        <button class="sort-btn active" onclick="testSort('time')">📅 按时间排序</button>
+        <button class="sort-btn" onclick="testSort('alphabetical')">🔤 按字母排序</button>
+      </div>
+      <div id="sort-test-result" class="test-result">
+        <span class="pending">⏳ 选择排序方式测试...</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 模态框容器 -->
+  <div id="modal-container"></div>
+  
+  <script src="utils/knowledge.js"></script>
+  <script>
+    // 模拟 app 对象
+    const mockApp = {
+      showToast: function(msg, type) {
+        console.log('Toast:', msg, type);
+      }
+    };
+    
+    // 创建知识库实例
+    let knowledgeManager;
+    let currentSortMode = 'time';
+    
+    // 初始化测试
+    window.addEventListener('DOMContentLoaded', () => {
+      knowledgeManager = new KnowledgeManager(mockApp);
+      runAllTests();
+    });
+    
+    // 运行所有测试
+    function runAllTests() {
+      testTermsData();
+      testPlatformsData();
+    }
+    
+    // 测试术语数据
+    function testTermsData() {
+      const container = document.getElementById('terms-test-result');
+      try {
+        const terms = knowledgeManager.terms;
+        if (!terms || terms.length === 0) {
+          container.innerHTML = '<span class="fail">❌ 术语数据为空</span>';
+          return;
+        }
+        
+        let totalTerms = 0;
+        let html = '<div style="margin-bottom: 12px;">';
+        html += `<span class="pass">✅ 术语数据加载成功</span><br>`;
+        html += `共 ${terms.length} 个分类，`;
+        
+        terms.forEach(cat => {
+          totalTerms += cat.terms.length;
+        });
+        html += `共 ${totalTerms} 个术语</div>`;
+        
+        // 显示分类概览
+        html += '<div style="display: flex; gap: 8px; flex-wrap: wrap;">';
+        terms.forEach(cat => {
+          html += `<span class="term-badge">${cat.icon} ${cat.category}: ${cat.terms.length}个</span>`;
+        });
+        html += '</div>';
+        
+        // 显示第一个术语详情
+        if (terms[0] && terms[0].terms[0]) {
+          const firstTerm = terms[0].terms[0];
+          html += `<div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">`;
+          html += `<strong>示例术语：</strong><br>`;
+          html += `<strong>${firstTerm.term}</strong> (${firstTerm.full_name})<br>`;
+          html += `<span style="color: #aaa; font-size: 12px;">首次出现：${firstTerm.first_appear} | 起源：${firstTerm.origin}</span>`;
+          html += `</div>`;
+        }
+        
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = `<span class="fail">❌ 测试失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试平台数据
+    function testPlatformsData() {
+      const container = document.getElementById('platforms-test-result');
+      try {
+        const platforms = knowledgeManager.platforms;
+        if (!platforms || platforms.length === 0) {
+          container.innerHTML = '<span class="fail">❌ 平台数据为空</span>';
+          return;
+        }
+        
+        let totalPlatforms = 0;
+        let html = '<div style="margin-bottom: 12px;">';
+        html += `<span class="pass">✅ 平台数据加载成功</span><br>`;
+        html += `共 ${platforms.length} 个分类，`;
+        
+        platforms.forEach(cat => {
+          totalPlatforms += cat.platforms.length;
+        });
+        html += `共 ${totalPlatforms} 个平台</div>`;
+        
+        // 显示分类概览
+        html += '<div style="display: flex; gap: 8px; flex-wrap: wrap;">';
+        platforms.forEach(cat => {
+          html += `<span class="term-badge">${cat.icon} ${cat.category}: ${cat.platforms.length}个</span>`;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = `<span class="fail">❌ 测试失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试显示学习资源
+    function testShowResources() {
+      document.getElementById('click-test-result').innerHTML = '<span class="pass">✅ 学习资源按钮点击成功</span>';
+      try {
+        knowledgeManager.showResourcesModal();
+        document.getElementById('click-test-result').innerHTML += '<br><span class="pass">✅ 模态框显示成功</span>';
+      } catch (e) {
+        document.getElementById('click-test-result').innerHTML += `<br><span class="fail">❌ 显示模态框失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试显示提示词模板
+    function testShowTemplates() {
+      document.getElementById('click-test-result').innerHTML = '<span class="pass">✅ 提示词模板按钮点击成功</span>';
+      try {
+        knowledgeManager.showTemplatesModal();
+        document.getElementById('click-test-result').innerHTML += '<br><span class="pass">✅ 模态框显示成功</span>';
+      } catch (e) {
+        document.getElementById('click-test-result').innerHTML += `<br><span class="fail">❌ 显示模态框失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试显示收藏
+    function testShowFavorites() {
+      document.getElementById('click-test-result').innerHTML = '<span class="pass">✅ 我的收藏按钮点击成功</span>';
+      try {
+        knowledgeManager.showFavoritesModal();
+        document.getElementById('click-test-result').innerHTML += '<br><span class="pass">✅ 模态框显示成功</span>';
+      } catch (e) {
+        document.getElementById('click-test-result').innerHTML += `<br><span class="fail">❌ 显示模态框失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试显示术语词典
+    function testShowTerms() {
+      document.getElementById('click-test-result').innerHTML = '<span class="pass">✅ AI 术语词典按钮点击成功</span>';
+      try {
+        knowledgeManager.showTermsModal();
+        document.getElementById('click-test-result').innerHTML += '<br><span class="pass">✅ 模态框显示成功</span>';
+      } catch (e) {
+        document.getElementById('click-test-result').innerHTML += `<br><span class="fail">❌ 显示模态框失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试显示平台百科
+    function testShowPlatforms() {
+      document.getElementById('click-test-result').innerHTML = '<span class="pass">✅ AI 平台百科按钮点击成功</span>';
+      try {
+        knowledgeManager.showPlatformsModal();
+        document.getElementById('click-test-result').innerHTML += '<br><span class="pass">✅ 模态框显示成功</span>';
+      } catch (e) {
+        document.getElementById('click-test-result').innerHTML += `<br><span class="fail">❌ 显示模态框失败：${e.message}</span>`;
+      }
+    }
+    
+    // 测试排序功能
+    function testSort(mode) {
+      currentSortMode = mode;
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      const container = document.getElementById('sort-test-result');
+      
+      try {
+        // 展平所有术语
+        const allTerms = knowledgeManager.terms.flatMap(cat => cat.terms);
+        let displayTerms = [...allTerms];
+        
+        if (mode === 'alphabetical') {
+          displayTerms.sort((a, b) => a.term.localeCompare(b.term, 'zh-CN'));
+        } else {
+          displayTerms.sort((a, b) => {
+            const yearA = parseInt(a.first_appear.match(/\d{4}/)?.[0] || '0');
+            const yearB = parseInt(b.first_appear.match(/\d{4}/)?.[0] || '0');
+            return yearA - yearB;
+          });
+        }
+        
+        let html = `<div class="pass">✅ ${mode === 'time' ? '按时间' : '按字母'} 排序成功</div>`;
+        html += '<div style="margin-top: 12px;"><strong>排序结果（前 5 个）：</strong></div>';
+        html += '<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">';
+        displayTerms.slice(0, 5).forEach((term, idx) => {
+          html += `<div style="padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 13px;">`;
+          html += `<span style="color: #888;">${idx + 1}.</span> <strong>${term.term}</strong>`;
+          if (mode === 'time') {
+            html += ` <span style="color: #888; font-size: 12px;">(${term.first_appear})</span>`;
+          }
+          html += `</div>`;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = `<span class="fail">❌ 排序测试失败：${e.message}</span>`;
+      }
+    }
+    
+    // 关闭模态框
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(m => m.remove());
+    }
+  </script>
+</body>
+</html>
